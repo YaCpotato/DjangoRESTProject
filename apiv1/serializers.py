@@ -1,9 +1,16 @@
 from rest_framework import serializers
 
-from shop.models import Book
+from shop.models import TsunList
+from shop.models import User
 
 
-class BookSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Book
-        fields = ('id', 'title', 'price')
+        model = User
+        fields = ('id', 'name', 'password')
+
+class TsunListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TsunList
+        fields = ('id', 'UserId', 'title','category','tsuntype','link','memo','exp','read','created_at')
+

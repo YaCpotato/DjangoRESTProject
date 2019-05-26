@@ -84,6 +84,47 @@
         </div>
       </b-form>
     </main>
+
+    <main class="container">
+      <p class="h5 mb-4">ホーム</p>
+      <b-form @submit.prevent="tsun">
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">登録名</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="tsun.title">
+          </div>
+        </div>
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">カテゴリ</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="tsun.category">
+          </div>
+        </div>
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">タイプ</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="tsun.tsuntype">
+          </div>
+        </div>
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">リンク</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="tsun.link">
+          </div>
+        </div>
+        <div class="row form-group">
+          <label class="col-sm-3 col-form-label">メモ</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" v-model="tsun.memo">
+          </div>
+        </div>
+        <div class="row text-center mt-5">
+          <div class="col-sm-12">
+            <b-button type="submit" variant="primary">#{ isCreated ? '更新' : '登録' }</b-button>
+          </div>
+        </div>
+      </b-form>
+    </main>
   </div>
 
   <!-- デバッグ -->
@@ -133,15 +174,63 @@
         info: '',
         warnings: [],
         error: ''
+      },
+      tsun: {
+        title:'',
+        category:'',
+        tsuntype:'',
+        link:'',
+        memo:'',
+        read:'',
       }
     },
     computed: {
       // 登録済みかどうか
       isCreated: function () {
         return this.form.book.id !== undefined
+      },
+      isTsuned: function(){
+        return this.tsun.id !== undefined
       }
     },
     methods: {
+      tsun: function(){
+        this.clearMessages()
+        api({
+          // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
+          method: this.isTsuned ? 'put' : 'post',
+          url: this.isTsuned ? '/books/' + this.tsun.id + '/' : '/books/',
+          data: {
+            'id': this.tsun.id,
+            'title': this.tsun.title,
+            'price': this.tsun.category,
+            'type': this.tsun.type,
+            'link': this.tsun.link,
+            'memo': this.tsun.memo
+          }
+        })
+          .then(response => {
+            this.message.info = this.isTsuned ? '更新しました。' : '登録しました。'
+            this.form.book = response.data
+          })
+          .catch(error => {
+            const status = error.response ? error.response.status : 500
+            if (status === 400) {
+              // バリデーションNG
+              this.message.warnings = [].concat.apply(
+                [], Object.values(error.response.data))
+            } else if (status === 401) {
+              // 認証エラー
+              this.message.error = '認証エラー'
+            } else if (status === 403) {
+              // 権限エラー
+              this.message.error = '権限エラーです。'
+            } else {
+              // その他のエラー
+              this.message.error = '想定外のエラーです。'
+            }
+          })
+      },
       // 登録・更新ボタン押下時に呼び出されるメソッド
       submitSave: function () {
         this.clearMessages()
