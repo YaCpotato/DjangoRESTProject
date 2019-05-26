@@ -8,7 +8,7 @@ from .serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """BookオブジェクトのCRUDをおこなうAPI"""
+    """CRUDをおこなうAPI"""
 
     queryset = User.objects.all()
     serializer_class = UserSerializer

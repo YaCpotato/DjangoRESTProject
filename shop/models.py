@@ -3,18 +3,6 @@ import uuid
 from django.db import models
 from django.utils import timezone
 
-TSUN_CATEGORY_CHOICES=(
-        ('RE','永久保存'),
-        ('DAC','終わったら消す'),
-        ('DIT','今日中に消す'),
-    )
-
-TSUN_TYPE_CHOICES=(
-    ('W','Web'),
-    ('PD','PDF'),
-    ('Pa','Paper')
-)
-
 
 class User(models.Model):
     """本モデル"""
@@ -29,14 +17,26 @@ class User(models.Model):
 class TsunList(models.Model):
     """本モデル"""
 
+#    TSUN_CATEGORY_CHOICES=(
+#        ('RE','永久保存'),
+#        ('DAC','終わったら消す'),
+#        ('DIT','今日中に消す'),
+#    )
+#
+#    TSUN_TYPE_CHOICES=(
+#        ('W','Web'),
+#        ('PD','PDF'),
+#        ('Pa','Paper')
+#    )
+
     class Meta:
         db_table = 'tsun'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    UserId = models.IntegerField(editable=False)
+    UserId = models.IntegerField(editable=False, default=0)
     title = models.CharField(max_length=100)
-    category = models.CharField(max_length=20,choices=TSUN_CATEGORY_CHOICES)
-    tsuntype = models.CharField(max_length=20,choices=TSUN_TYPE_CHOICES)
+    category = models.CharField(max_length=20)#choices=TSUN_CATEGORY_CHOICES
+    tsuntype = models.CharField(max_length=20)#choices=TSUN_TYPE_CHOICES
     link = models.CharField(max_length=500)
     memo = models.CharField(max_length=200)
     exp = models.IntegerField(max_length=10000)
