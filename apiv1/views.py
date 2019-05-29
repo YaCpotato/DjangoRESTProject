@@ -14,8 +14,15 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+
 class TsunListViewSet(viewsets.ModelViewSet):
 
     queryset = TsunList.objects.all()
     serializer_class = TsunListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+  #  def getAllTsunList():
+   #     queryset = TsunList.objects.all()
+   #     serializer = TsunListSerializer(queryset, many=True)
+   #     return serializer.data
+

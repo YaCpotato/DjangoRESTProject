@@ -164,8 +164,47 @@
         memo:'',
         read:'',
         exp: 0,
-      }
+      },
+      tsunList:[]
     },
+     mounted:function(){
+       api({
+           // 登録済みかどうかでHTTPメソッドとエンドポイントを切り替える
+           method: 'get',
+           url: this.isTsuned ? '/tsunlist/' + this.tsun.id + '/' : '/tsunlist/',
+           data: {
+             'UserId':0,//admin
+             'id': this.tsun.id,
+             'title': this.tsun.title,
+             'category': this.tsun.category,
+             'tsuntype': this.tsun.tsuntype,
+             'link': this.tsun.link,
+             'memo': this.tsun.memo,
+             'exp': this.tsun.exp
+           }
+         })
+           .then(response => {
+             //受け取りようtsunListに帰ってきたデータを代入する
+             this.tsunList = response.data
+           })
+           .catch(error => {
+             const status = error.response ? error.response.status : 500
+             if (status === 400) {
+              // バリデーションNG
+               this.message.warnings = [].concat.apply(
+                 [], Object.values(error.response.data))
+             } else if (status === 401) {
+               // 認証エラー
+               this.message.error = '認証エラー'
+             } else if (status === 403) {
+               // 権限エラー
+               this.message.error = '権限エラーです。'
+             } else {
+               // その他のエラー
+               this.message.error = '想定外のエラーです。'
+             }
+           })
+     },
     computed: {
       // 登録済みかどうか
       isTsuned: function(){
@@ -191,6 +230,7 @@
           }
         })
           .then(response => {
+            console.log(response)
             this.message.info = this.isTsuned ? '更新しました。' : '登録しました。'
             //this.form.book = response.data
           })
